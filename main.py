@@ -1,7 +1,6 @@
 import pygame
 import numpy
 
-
 ### Globals ###
 
 pygame.init()
@@ -11,6 +10,7 @@ adj = [[0, 0], [0, -1], [-1, 0], [0, 1], [1, 0]]
 TILE_HEIGHT = 50
 TILE_WIDTH = 50
 MARGIN = 2
+
 
 class Game:
     def __init__(self, cells):
@@ -53,69 +53,166 @@ class Game:
             self.grid[j][i] = (self.grid[j][i] + 1) % 2
 
 
-def setOne(A,n,col , i , j):
+def changeRow(matrix, check, i, e):
+    if i != e and check[i] == False:
+        temp = numpy.array(matrix[e])
+        matrix[e] = matrix[i]
+        matrix[i] = temp
+    check[e] = True
+
+
+def findPivot(matrix, col):
+    i = 0
+    flag = False
+    while not flag:
+        if matrix[i][col] != 0:
+            flag = True
+        else:
+            i += 1
+    return i
+
+
+def reduceIt(A, n):
+    check = numpy.array(False)
+    l = 1
+    while l < n:
+        check = numpy.append(check, False, axis=None)
+        l += 1
+    print(check)
+    e = 0
+    # while e < n:
+    #     i = findPivot(A, e)
+    #     changeRow(i, e)
+
+
+def determinantOfMatrix(mat, n):
+    temp = [0] * n  # temporary array for storing row
+    total = 1
+    det = 1  # initialize result
+
+    # loop for traversing the diagonal elements
+    for i in range(0, n):
+        index = i  # initialize the index
+
+        # finding the index which has non zero value
+        while (index < n and mat[index][i] == 0):
+            index += 1
+
+        if (index == n):  # if there is non zero element
+            # the determinant of matrix as zero
+            continue
+
+        if (index != i):
+            # loop for swapping the diagonal element row and index row
+            for j in range(0, n):
+                mat[index][j], mat[i][j] = mat[i][j], mat[index][j]
+
+            # determinant sign changes when we shift rows
+            # go through determinant properties
+            det = det * int(pow(-1, index - i))
+
+        # storing the values of diagonal row elements
+        for j in range(0, n):
+            temp[j] = mat[i][j]
+
+        # traversing every row below the diagonal element
+        for j in range(i + 1, n):
+            num1 = temp[i]  # value of diagonal element
+            num2 = mat[j][i]  # value of next row element
+
+            # traversing every column of row
+            # and multiplying to every row
+            for k in range(0, n):
+                # multiplying to make the diagonal
+                # element and next row element equal
+
+                mat[j][k] = (num1 * mat[j][k]) - (num2 * temp[k])
+
+            total = total * num1  # Det(kA)=kDet(A);
+
+    # multiplying the diagonal elements to get determinant
+    for i in range(0, n):
+        det = det * mat[i][i]
+
+    return int(det / total)  # Det(kA)/k=Det(A);
+
+
+def checkA(A, n):
+    mat = numpy.copy(A)
+    print(determinantOfMatrix(mat, n))
+
+
+def setOne(A, n, col, i, j):
     row = i * n + j
     A[row][col] = 1
 
-def letsCheat( cells ):
+
+def letsCheat(cells):
     G = cells.copy()
-    #let's make A
+    # let's make A
     n = len(G)
-    A = numpy.zeros([n*n,n*n], dtype=int)
+    A = numpy.zeros([n * n, n * n], dtype=int)
     col = 0
-    for i in range(5):
-        for j in range(5):
-            print(f'For i = {i}  and j = {j}')
-            setOne(A,n,col,i,j)
-            if i-1 >= 0 :
-                print("yes i-1")
-                setOne(A,n,col,i-1,j)
-            if i+1 < n :
-                print("yes i+1")
-                setOne(A,n,col,i+1,j)
-            if j-1 >=0 :
-                print("yes j-1")
-                setOne(A,n,col,i,j-1)
-            if j+1 < n :
-                print("yes j+1")
-                setOne(A,n,col,i,j+1)
+    for i in range(n):
+        for j in range(n):
+            # print(f'For i = {i}  and j = {j}')
+            setOne(A, n, col, i, j)
+            if i - 1 >= 0:
+                # print("yes i-1")
+                setOne(A, n, col, i - 1, j)
+            if i + 1 < n:
+                # print("yes i+1")
+                setOne(A, n, col, i + 1, j)
+            if j - 1 >= 0:
+                # print("yes j-1")
+                setOne(A, n, col, i, j - 1)
+            if j + 1 < n:
+                # print("yes j+1")
+                setOne(A, n, col, i, j + 1)
             col = col + 1
-    #let's make B
-    B = numpy.zeros([n*n,1],dtype=int)
-    for i in range(5):
-        for j in range(5):
-            if G[i][j]==1 :
-                B[i*n+j][0]=1
+    # let's make B
+    B = numpy.zeros([n * n, 1], dtype=int)
+    for i in range(n):
+        for j in range(n):
+            if G[i][j] == 1:
+                B[i * n + j][0] = 1
+
     print(A)
+    print('///////////////////////////////////////////////////////////')
+    print(B)
+    print('///////////////////////////////////////////////////////////')
+    # else :
+    checkA(A, n)
+    A = numpy.append(A, B, axis=1)
+    print(A)
+    reduceIt(A, n)
 
 
 ### Main ###
 if __name__ == "__main__":
+    cells = numpy.array([[1, 0, 1],
+                         [0, 1, 0],
+                         [1, 0, 1]])
+    print(cells)
 
-    cells = numpy.array([[1, 0, 0, 0, 1],
-             [0, 1, 0, 1, 0],
-             [0, 0, 1, 0, 0],
-             [0, 1, 0, 1, 0],
-             [1, 0, 0, 0, 1],])
-
-    screen = pygame.display.set_mode((len(cells) * TILE_WIDTH, len(cells) * TILE_HEIGHT))
-    screen.fill((167, 219, 216))
-    pygame.display.set_caption("Game")
-
-    game = Game(cells.T)
-    game.draw()
+    # screen = pygame.display.set_mode((len(cells) * TILE_WIDTH, len(cells) * TILE_HEIGHT))
+    # screen.fill((167, 219, 216))
+    # pygame.display.set_caption("Game")
+    #
+    # game = Game(cells.T)
+    # game.draw()
 
     clock = pygame.time.Clock()
     keepGoing = True
     letsCheat(cells)
-    while keepGoing:
-        clock.tick(30)
-        game.draw()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                keepGoing = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                game.click(pos)
-        pygame.display.flip()
-    pygame.quit()
+    # while keepGoing:
+    #     clock.tick(30)
+    #     game.draw()
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             keepGoing = False
+    #         elif event.type == pygame.MOUSEBUTTONDOWN:
+    #             pos = pygame.mouse.get_pos()
+    #             game.click(pos)
+    #     pygame.display.flip()
+    # pygame.quit()
