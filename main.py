@@ -59,11 +59,18 @@ def setZero(matrix, n, e):
         while c < n:
             print(f'c = {c}')
             print(f'pivot row is {matrix[e]}')
-            print(f'reducing {matrix[c]}')
+            print(f'summing      {matrix[c]}')
             m = matrix[c][e]
             print(f'm is {m}')
-            matrix[c] = matrix[c] - m * (matrix[e])
-            print(f'after reduction {matrix[c]}')
+            if m == 1 :
+                i = 0
+                while i + e <= n:
+                    if matrix[c][e + i]==1 and matrix[e][i+e]== 1:
+                        matrix[c][e+i]=0
+                    else:
+                        matrix[c][i+e]=matrix[c][i+e]+matrix[e][e+i]
+                    i = i+1
+            print(f'after summing {matrix[c]}')
             c += 1
         print('A is now :')
         print(matrix)
@@ -96,13 +103,30 @@ def one(matrix, e):
         matrix[e] = tmp
 
 def ReduceIt(matrix,n):
+    print('lets reduce it')
+    print(n)
     t = 0
     while t < n*n:
         for i in range( n*n ):
-            m = float(matrix[t][i])
+            print('before')
+            print(matrix[t])
+            print(matrix[i])
+            m = matrix[t][i]
             if m!= 0 and t != i:
-                matrix[t] = matrix[t] - m * matrix[i]
+                j=0
+                while j+i<=n*n:
+                    if matrix[t][i+j]==1 and matrix[i][i+j]==1:
+                        matrix[t][i+j]=0
+                    else:
+                        matrix[t][i+j]=matrix[t][i+j]+matrix[i][i+j]
+                    j =j+1
+                print('after:')
+                print(matrix[t])
+        print('changed ')
+        print(matrix)
         t += 1
+
+
     print('after reduction:')
     print(matrix)
 
