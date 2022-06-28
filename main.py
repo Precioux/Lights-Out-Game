@@ -79,8 +79,13 @@ def letsCheat( cells ):
                 print("yes j+1")
                 setOne(A,n,col,i,j+1)
             col = col + 1
-    print(A)
-
+    #let's make B
+    B = numpy.zeros([n*n,1],dtype=int)
+    for i in range(5):
+        for j in range(5):
+            if G[i][j]==1 :
+                B[i*n+j][0]=1
+    print(B)
 
 
 ### Main ###
