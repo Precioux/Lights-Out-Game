@@ -53,36 +53,80 @@ class Game:
             self.grid[j][i] = (self.grid[j][i] + 1) % 2
 
 
+def setZero(matrix, n, e):
+    if e + 1 < n:
+        c = e + 1
+        while c < n:
+            print(f'c = {c}')
+            print(f'pivot row is {matrix[e]}')
+            print(f'reducing {matrix[c]}')
+            m = matrix[c][e]
+            print(f'm is {m}')
+            matrix[c] = matrix[c] - m * (matrix[e])
+            print(f'after reduction {matrix[c]}')
+            c += 1
+        print('A is now :')
+        print(matrix)
+
+
 def changeRow(matrix, check, i, e):
     if i != e and check[i] == False:
         temp = numpy.array(matrix[e])
         matrix[e] = matrix[i]
         matrix[i] = temp
+        print("Row changed")
     check[e] = True
 
 
-def findPivot(matrix, col):
+def findPivot(matrix, check, col):
     i = 0
     flag = False
     while not flag:
-        if matrix[i][col] != 0:
+        if matrix[i][col] != 0 and check[i] == False:
             flag = True
         else:
             i += 1
     return i
 
 
-def reduceIt(A, n):
-    check = numpy.array(False)
-    l = 1
-    while l < n:
-        check = numpy.append(check, False, axis=None)
-        l += 1
-    print(check)
+def one(matrix, e):
+    a = int(matrix[e][e])
+    if a != 0:
+        tmp = matrix[e] / a
+        matrix[e] = tmp
+
+def ReduceIt(matrix,n):
+    t = 0
+    while t < n*n:
+        for i in range( n*n ):
+            m = float(matrix[t][i])
+            if m!= 0 and t != i:
+                matrix[t] = matrix[t] - m * matrix[i]
+        t += 1
+    print('after reduction:')
+    print(matrix)
+
+
+def EchlonIt(A, n):
+    check = numpy.full((n * n), False)
     e = 0
-    # while e < n:
-    #     i = findPivot(A, e)
-    #     changeRow(i, e)
+    while e < n * n:
+        print(f'e is {e}')
+        print(check)
+        i = findPivot(A, check, e)
+        print(f'pivot is row {i}')
+        changeRow(A, check, i, e)
+        one(A, e)
+        setZero(A, n * n, e)
+        e = e + 1
+    # print(f'A after first While')
+    # print(A)
+    # k = 0
+    # while k < n*n:
+    #     setZero(A,n*n,k)
+    #     k += 1
+    print('Final :')
+    print(A)
 
 
 def determinantOfMatrix(mat, n):
@@ -184,8 +228,11 @@ def letsCheat(cells):
     # else :
     checkA(A, n)
     A = numpy.append(A, B, axis=1)
+    print("A : B =>")
     print(A)
-    reduceIt(A, n)
+    EchlonIt(A, n)
+    ReduceIt(A,n)
+
 
 
 ### Main ###
