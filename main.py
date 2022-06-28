@@ -66,6 +66,7 @@ def letsCheat( cells ):
     for i in range(5):
         for j in range(5):
             print(f'For i = {i}  and j = {j}')
+            setOne(A,n,col,i,j)
             if i-1 >= 0 :
                 print("yes i-1")
                 setOne(A,n,col,i-1,j)
@@ -85,7 +86,7 @@ def letsCheat( cells ):
         for j in range(5):
             if G[i][j]==1 :
                 B[i*n+j][0]=1
-    print(B)
+    print(A)
 
 
 ### Main ###
