@@ -1,12 +1,11 @@
 import pygame
 import numpy
-
+#Samin Mahdipour - 9839039
+#LA Final Project  Part 1
 ### Globals ###
 
 pygame.init()
-
 adj = [[0, 0], [0, -1], [-1, 0], [0, 1], [1, 0]]
-
 TILE_HEIGHT = 50
 TILE_WIDTH = 50
 MARGIN = 2
@@ -61,7 +60,7 @@ def setZero(matrix, n, e):
             print(f'pivot row is {matrix[e]}')
             print(f'summing      {matrix[c]}')
             m = matrix[c][e]
-            print(f'm is {m}')
+            print(f'value of element in this column is {m}')
             if m == 1 :
                 i = 0
                 while i + e <= n:
@@ -70,9 +69,9 @@ def setZero(matrix, n, e):
                     else:
                         matrix[c][i+e]=matrix[c][i+e]+matrix[e][e+i]
                     i = i+1
-            print(f'after summing {matrix[c]}')
+            print(f'after sum    {matrix[c]}')
             c += 1
-        print('A is now :')
+        print('result :')
         print(matrix)
 
 
@@ -103,10 +102,9 @@ def one(matrix, e):
         matrix[e] = tmp
 
 def ReduceIt(matrix,n):
-    print('lets reduce it')
-    print(n)
     t = 0
     while t < n*n:
+        print(f'Column No.{t}: ')
         for i in range( n*n ):
             print('before')
             print(matrix[t])
@@ -122,34 +120,31 @@ def ReduceIt(matrix,n):
                     j =j+1
                 print('after:')
                 print(matrix[t])
-        print('changed ')
-        print(matrix)
         t += 1
 
-
-    print('after reduction:')
+    print('Reduced Echlon Form :')
     print(matrix)
 
 
 def EchlonIt(A, n):
+    #check array for submitted rows
     check = numpy.full((n * n), False)
-    e = 0
+    e = 0 #e for each column
     while e < n * n:
-        print(f'e is {e}')
+        print(f'Column No.{e}')
+        print('Situation of Rows:')
         print(check)
+        print('Finding pivot row...')
         i = findPivot(A, check, e)
-        print(f'pivot is row {i}')
+        print(f'Pivot is row No.{i}')
         changeRow(A, check, i, e)
+        print('Making pivot ome...')
         one(A, e)
+        print('Making below items zero...')
         setZero(A, n * n, e)
         e = e + 1
-    # print(f'A after first While')
-    # print(A)
-    # k = 0
-    # while k < n*n:
-    #     setZero(A,n*n,k)
-    #     k += 1
-    print('Final :')
+
+    print('Echlon Form :')
     print(A)
 
 
@@ -207,15 +202,26 @@ def determinantOfMatrix(mat, n):
 
 def checkA(A, n):
     mat = numpy.copy(A)
-    print(determinantOfMatrix(mat, n))
+    det = determinantOfMatrix(mat, n)
+    print(f'Determinant is {det}')
+    if det !=0 :
+        print("There gonna be an answer for this game")
+    else :
+        print("No Answer!")
 
 
 def setOne(A, n, col, i, j):
     row = i * n + j
     A[row][col] = 1
 
+def cheatSheet(matrix,n):
+    for i in range(n*n):
+      if matrix[i][n*n]==1:
+          print(f'Click On {i+1}')
+    print('Done!')
 
 def letsCheat(cells):
+    # a copy from cells
     G = cells.copy()
     # let's make A
     n = len(G)
@@ -223,19 +229,14 @@ def letsCheat(cells):
     col = 0
     for i in range(n):
         for j in range(n):
-            # print(f'For i = {i}  and j = {j}')
             setOne(A, n, col, i, j)
             if i - 1 >= 0:
-                # print("yes i-1")
                 setOne(A, n, col, i - 1, j)
             if i + 1 < n:
-                # print("yes i+1")
                 setOne(A, n, col, i + 1, j)
             if j - 1 >= 0:
-                # print("yes j-1")
                 setOne(A, n, col, i, j - 1)
             if j + 1 < n:
-                # print("yes j+1")
                 setOne(A, n, col, i, j + 1)
             col = col + 1
     # let's make B
@@ -244,46 +245,49 @@ def letsCheat(cells):
         for j in range(n):
             if G[i][j] == 1:
                 B[i * n + j][0] = 1
-
+    print('A is made : ')
     print(A)
-    print('///////////////////////////////////////////////////////////')
+    print('B is made : ')
     print(B)
-    print('///////////////////////////////////////////////////////////')
-    # else :
+    print("Checking determinant....")
     checkA(A, n)
+    #make Ax=B [A:B] to find x
     A = numpy.append(A, B, axis=1)
-    print("A : B =>")
+    print("[A : B] =>")
     print(A)
+    print("lets make echlon form...")
     EchlonIt(A, n)
-    ReduceIt(A,n)
-
+    print("lets reduce echlon form...")
+    ReduceIt(A, n)
+    print("Cheat sheet is ready!")
+    cheatSheet(A,n)
 
 
 ### Main ###
 if __name__ == "__main__":
-    cells = numpy.array([[1, 0, 1],
-                         [0, 1, 0],
-                         [1, 0, 1]])
+    cells = numpy.array([[1, 0,1],
+                         [1, 1,0],
+                         [1,0,1]] )
     print(cells)
 
-    # screen = pygame.display.set_mode((len(cells) * TILE_WIDTH, len(cells) * TILE_HEIGHT))
-    # screen.fill((167, 219, 216))
-    # pygame.display.set_caption("Game")
-    #
-    # game = Game(cells.T)
-    # game.draw()
+    screen = pygame.display.set_mode((len(cells) * TILE_WIDTH, len(cells) * TILE_HEIGHT))
+    screen.fill((167, 219, 216))
+    pygame.display.set_caption("Game")
+
+    game = Game(cells.T)
+    game.draw()
 
     clock = pygame.time.Clock()
     keepGoing = True
     letsCheat(cells)
-    # while keepGoing:
-    #     clock.tick(30)
-    #     game.draw()
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.QUIT:
-    #             keepGoing = False
-    #         elif event.type == pygame.MOUSEBUTTONDOWN:
-    #             pos = pygame.mouse.get_pos()
-    #             game.click(pos)
-    #     pygame.display.flip()
-    # pygame.quit()
+    while keepGoing:
+        clock.tick(30)
+        game.draw()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                keepGoing = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                game.click(pos)
+        pygame.display.flip()
+    pygame.quit()
